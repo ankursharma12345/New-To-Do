@@ -2,9 +2,14 @@ import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import React, { Fragment, useState } from "react";
 import "../styles/Signup.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { showSnackbar } from "../store/Reducer/Snackbar";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 
 const Login = () => {
   const [stateData, setStateData] = useState({});
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setStateData((prev) => {
       prev[e.target.id] = e.target.value;
@@ -15,11 +20,25 @@ const Login = () => {
   const goToSignup = () => {
     navigate("/", { replace: true });
   };
-  const gotToMainPage = () => {
-    navigate("/todo", { replace: true });
+  const gotToMainPage = async () => {
+    const response = await axios.get(
+      `http://localhost:4000/getData?email=${stateData?.email}&password=${stateData?.password}`
+    );
+    if (response.data.rows.length > 0) {
+      setTimeout(() => {
+        dispatch(showSnackbar(true, "success", "Login Successfully"));
+      }, 10);
+      const getUserId = response.data.rows[0].user_id;
+      navigate("/todo", { state: { userId: getUserId } }, { replace: true });
+    } else {
+      dispatch(showSnackbar(true, "error", "You don't have an account"));
+    }
   };
   return (
     <Fragment>
+      <HelmetProvider>
+        <Helmet title="Login" />
+      </HelmetProvider>
       <Grid container className="mainContainer">
         <Grid item xs={12} className="container">
           <Box
@@ -29,7 +48,7 @@ const Login = () => {
               padding: 3,
               borderRadius: "8px",
               boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-              backgroundColor: "white",
+              backgroundColor: "beige",
             }}
           >
             <Grid
@@ -55,6 +74,7 @@ const Login = () => {
                         id="email"
                         autoFocus={true}
                         value={stateData?.["email"]}
+                        onChange={handleChange}
                         fullWidth
                         placeholder="Enter your email"
                         variant="outlined"
@@ -70,6 +90,7 @@ const Login = () => {
                         fullWidth
                         type="password"
                         value={stateData?.["password"]}
+                        onChange={handleChange}
                         placeholder="Enter your password"
                         variant="outlined"
                       />
@@ -83,7 +104,8 @@ const Login = () => {
                       fullWidth
                       sx={{
                         height: "50px",
-                        backgroundColor: "#1976d2",
+                        // backgroundColor: "#1976d2",
+                        backgroundColor: "black",
                         fontWeight: "bold",
                       }}
                       onClick={gotToMainPage}

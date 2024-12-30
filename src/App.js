@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import Header from "./Header";
+import MainLayout from "./MainLayout";
 import Login from "./Modules/Login";
 import SignupPage from "./Modules/SignupPage";
 
@@ -11,7 +11,7 @@ function App() {
         <Routes>
           <Route path="/" element={<SignupPage />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/todo" element={<Header />} />
+          <Route path="/todo" element={<MainLayout />} />
         </Routes>
       </BrowserRouter>
     </>

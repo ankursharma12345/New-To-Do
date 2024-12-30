@@ -1,6 +1,6 @@
 import CloseIcon from "@mui/icons-material/Close";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Grid, useMediaQuery, useTheme } from "@mui/material";
+import { Badge, Grid, useMediaQuery, useTheme } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
@@ -14,17 +14,38 @@ import ToDo from "./ToDo";
 
 const Header = () => {
   const [openMenu, setOpenMenu] = useState(false);
-  const [id, setId] = useState("Work");
+  const [id, setId] = useState({
+    initialData: "Work",
+    workBadge: 0,
+    groceryBadge: 0,
+    officeBadge: 0,
+  });
   const handleClick = (e) => {
-    setId(e.target.id);
+    setId((prev) => {
+      prev["initialData"] = e.target.id;
+      return { ...prev };
+    });
   };
 
   const handleOpenNavMenu = (event) => {
-    setOpenMenu(event.currentTarget);
+    if (event.currentTarget) setOpenMenu(true);
   };
   const handleCloseNavMenu = () => {
     setOpenMenu(false);
   };
+
+  const updateBadge = (badgeId, badgeData) => {
+    setId((prev) => {
+      if (badgeId === "WK") {
+        return { ...prev, workBadge: badgeData }; // Return a new object
+      } else if (badgeId === "GY") {
+        return { ...prev, groceryBadge: badgeData }; // Return a new object
+      } else {
+        return { ...prev, officeBadge: badgeData }; // Return a new object
+      }
+    });
+  };
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const calculateMenuWidth = () => {
@@ -85,36 +106,54 @@ const Header = () => {
                   <CloseIcon />
                 </Grid>
                 <Grid item className="mobileview">
-                  <Button
-                    id="Work"
-                    sx={{ display: "block", color: "white", fontSize: "large" }}
-                    onClick={(e) => {
-                      handleClick(e);
-                      handleCloseNavMenu();
-                    }}
-                  >
-                    Work
-                  </Button>
-                  <Button
-                    id="Grocery"
-                    sx={{ display: "block", color: "white", fontSize: "large" }}
-                    onClick={(e) => {
-                      handleClick(e);
-                      handleCloseNavMenu();
-                    }}
-                  >
-                    Grocery
-                  </Button>
-                  <Button
-                    id="Office"
-                    sx={{ display: "block", color: "white", fontSize: "large" }}
-                    onClick={(e) => {
-                      handleClick(e);
-                      handleCloseNavMenu();
-                    }}
-                  >
-                    Office
-                  </Button>
+                  <Badge badgeContent={id?.["workBadge"]} color="success">
+                    <Button
+                      id="Work"
+                      sx={{
+                        display: "block",
+                        color: "white",
+                        fontSize: "large",
+                      }}
+                      onClick={(e) => {
+                        handleClick(e);
+                        handleCloseNavMenu();
+                      }}
+                    >
+                      Work
+                    </Button>
+                  </Badge>
+                  <Badge badgeContent={id?.["groceryBadge"]} color="success">
+                    <Button
+                      id="Grocery"
+                      sx={{
+                        display: "block",
+                        color: "white",
+                        fontSize: "large",
+                      }}
+                      onClick={(e) => {
+                        handleClick(e);
+                        handleCloseNavMenu();
+                      }}
+                    >
+                      Grocery
+                    </Button>
+                  </Badge>
+                  <Badge badgeContent={id?.["officeBadge"]} color="success">
+                    <Button
+                      id="Office"
+                      sx={{
+                        display: "block",
+                        color: "white",
+                        fontSize: "large",
+                      }}
+                      onClick={(e) => {
+                        handleClick(e);
+                        handleCloseNavMenu();
+                      }}
+                    >
+                      Office
+                    </Button>
+                  </Badge>
                 </Grid>
               </Menu>
             </Grid>
@@ -153,22 +192,28 @@ const Header = () => {
                   },
                 }}
               >
-                <Button onClick={handleClick} id="Work">
-                  Work
-                </Button>
-                <Button onClick={handleClick} id="Grocery">
-                  Grocery
-                </Button>
-                <Button onClick={handleClick} id="Office">
-                  Office
-                </Button>
+                <Badge badgeContent={id?.["workBadge"]} color="success">
+                  <Button onClick={handleClick} id="Work">
+                    Work
+                  </Button>
+                </Badge>
+                <Badge badgeContent={id?.["groceryBadge"]} color="success">
+                  <Button onClick={handleClick} id="Grocery">
+                    Grocery
+                  </Button>
+                </Badge>
+                <Badge badgeContent={id?.["officeBadge"]} color="success">
+                  <Button onClick={handleClick} id="Office">
+                    Office
+                  </Button>
+                </Badge>
               </Grid>
             </Grid>
           </Grid>
         </Toolbar>
       </AppBar>
       <Grid container>
-        <ToDo id={id} />
+        <ToDo id={id?.["initialData"]} updateBadge={updateBadge} />
       </Grid>
     </Fragment>
   );
