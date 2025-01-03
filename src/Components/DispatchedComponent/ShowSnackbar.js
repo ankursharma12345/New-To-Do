@@ -24,8 +24,8 @@ const ShowSnackbar = () => {
     <Fragment>
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={open}
-        autoHideDuration={snackbarTime}
+        open={open ?? false}
+        autoHideDuration={parseInt(snackbarTime)}
         onClose={handleClose}
         sx={{ whiteSpace: "pre-wrap" }}
       >
